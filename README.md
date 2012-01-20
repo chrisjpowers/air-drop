@@ -109,6 +109,23 @@ var package = AirDrop("my-package").require("lib/my-module.js")
                                    // or just .minimize()
 ```
 
+### Caching Your Packages
+
+Since building these packages can be an expensive operation, you will probably want to cache
+the built packages in memory so they are only built once while your process is running.
+You can do this using the `cache` method, which takes an optional boolean like `package`
+and `minimize`:
+
+
+```javascript
+var package = AirDrop("my-package").require("lib/my-module.js")
+                                   .include("public/js/demo.js")
+                                   .package(process.env.NODE_ENV === "production")
+                                   .minimize(process.env.NODE_ENV === "production")
+                                   .cache(process.env.NODE_ENV === "production");
+                                   // or just .cache()
+```
+
 ### CoffeeScript
 
 Using CoffeeScript? No problem, any CoffeeScripts will be automatically compiled for you!
@@ -116,6 +133,6 @@ Using CoffeeScript? No problem, any CoffeeScripts will be automatically compiled
 ### TODO
 
 - Specs!
-- Build in caching of packages
 - More flexibility in naming AMD modules other than by path
 - Ability to slice out "server-only" code from shared files
+- Improve caching mechanism to integrate storage outside of memory (flat files, memcached)
