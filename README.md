@@ -95,7 +95,7 @@ var package = AirDrop("my-package").require("lib/my-module.js")
                                    .package(process.env.NODE_ENV === "production");
 ```
 
-### Minimizing Your Code
+## Minimizing Your Code
 
 Minimizing your client code is a good way to reducing file size as well as obfuscating
 it from prying eyes. Like the `package` method, the `minimize` method can be called
@@ -109,7 +109,7 @@ var package = AirDrop("my-package").require("lib/my-module.js")
                                    // or just .minimize()
 ```
 
-### Caching Your Packages
+## Caching Your Packages
 
 Since building these packages can be an expensive operation, you will probably want to cache
 the built packages in memory so they are only built once while your process is running.
@@ -126,13 +126,14 @@ var package = AirDrop("my-package").require("lib/my-module.js")
                                    // or just .cache()
 ```
 
-### CoffeeScript
+## CoffeeScript
 
 Using CoffeeScript? No problem, any CoffeeScripts will be automatically compiled for you!
 
-### TODO
+## TODO
 
 - Specs!
 - More flexibility in naming AMD modules other than by path
 - Ability to slice out "server-only" code from shared files
 - Improve caching mechanism to integrate storage outside of memory (flat files, memcached)
+- Inline documentation
