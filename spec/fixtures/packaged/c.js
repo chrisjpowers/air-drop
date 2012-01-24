@@ -1,6 +1,6 @@
-// include spec/fixtures/includes/c.coffee
+var c;
 
-exports.c = function() {
+c = function() {
   console.log("This is from C!");
   return "C";
 };
