@@ -1,5 +1,7 @@
 # AirDrop
 
+[![Build Status](https://secure.travis-ci.org/chrisjpowers/air-drop.png)](http://travis-ci.org/chrisjpowers/air-drop)
+
 `AirDrop` is a Node.js Connect middleware for compiling, concatenating and minimizing
  your JS/Coffee source files and delivering them to the browser on-the-fly. 
 Personally I think this approach is preferable to using build scripts, file watchers, etc.
@@ -10,6 +12,13 @@ Install with `npm`:
 
 ```
 npm install air-drop
+```
+
+You can run the specs with `npm` as well:
+
+```
+cd node_modules/air-drop
+npm test
 ```
 
 ## Including JS Files
