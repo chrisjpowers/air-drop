@@ -2,16 +2,20 @@ fs = require "fs"
 AirDrop = require "#{__dirname}/../lib/air-drop.js"
 expected = drop = null
 
-expectSourceToMatchFile = (drop, filename) ->
+expectSourceToMatch = (drop, content) ->
   actual = null
   trailingNewline = /(\n|\r)+$/
-  expected = fs.readFileSync(filename).toString().replace(trailingNewline, "")
+  expected = content.replace(trailingNewline, "")
   drop.source((err, data) ->
     actual = data
   )
   waitsFor -> actual
   runs ->
     expect(actual.replace(trailingNewline, "")).toEqual(expected)
+
+expectSourceToMatchFile = (drop, filename) ->
+  content = fs.readFileSync(filename).toString()
+  expectSourceToMatch drop, content
 
 describe "AirDrop", ->
   describe "including source", ->
@@ -74,3 +78,52 @@ describe "AirDrop", ->
 
       it "wraps the required files and includes them", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/de.js"
+
+
+  describe "#minimize", ->
+    describe "with no args", ->
+      beforeEach ->
+        drop = AirDrop("drop").minimize()
+
+      it "defaults to AirDrop.Minimizers.Uglify", ->
+        expect(drop.minimizer).toEqual AirDrop.Minimizers.Uglify
+
+    describe "with true", ->
+      beforeEach ->
+        drop = AirDrop("drop").minimize(true)
+
+      it "defaults to AirDrop.Minimizers.Uglify", ->
+        expect(drop.minimizer).toEqual AirDrop.Minimizers.Uglify
+
+    describe "with false", ->
+      beforeEach ->
+        drop = AirDrop("drop").minimize(false)
+
+      it "sets minimizer to null", ->
+        expect(drop.minimizer).toBeNull()
+
+    describe "with a function", ->
+      func = minimizer = null
+      beforeEach ->
+        minimizer = jasmine.createSpy "custom minimizer"
+        drop = AirDrop("drop").minimize(minimizer)
+
+      it "sets the function as the minimizer", ->
+        expect(drop.minimizer).toEqual(minimizer)
+
+  
+    describe "with AirDrop.Minimizers.Uglify", ->
+      beforeEach ->
+        drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(AirDrop.Minimizers.Uglify).package()
+
+      it "mangles and squeezes output", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/uglified/ab.js"
+
+    describe "with custom minimizer", ->
+      beforeEach ->
+        minimizer = (code) ->
+          "This is minimized! It had #{code.length} characters."
+        drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(minimizer).package()
+
+      it "returns the output of the function", ->
+        expectSourceToMatch drop, "This is minimized! It had 127 characters."
