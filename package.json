@@ -1,6 +1,6 @@
 {
   "name": "air-drop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Chris Powers <chrisjpowers@gmail.com>",
   "description": "Utility for packaging, manipulating and delivering JS source to the browser",
   "scripts": {
@@ -20,6 +20,8 @@
   },
   "engine": {
     "node": ">=0.4"
+  },
+  "engines": {
+    "node": "*"
   }
 }
-
