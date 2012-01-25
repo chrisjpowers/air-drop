@@ -100,7 +100,7 @@ describe "AirDrop", ->
         drop = AirDrop("drop").minimize(false)
 
       it "sets minimizer to null", ->
-        expect(drop.minimizer).toBeNull()
+        expect(drop.minimizer == AirDrop.Minimizers.None).toBeTruthy()
 
     describe "with a function", ->
       func = minimizer = null
@@ -149,7 +149,7 @@ describe "AirDrop", ->
         drop = AirDrop("drop").cache(false)
 
       it "sets cacher to null", ->
-        expect(drop.cacher).toBeNull()
+        expect(drop.cacher == AirDrop.Cachers.None).toBeTruthy()
 
     describe "with a function", ->
       func = cacher = null
