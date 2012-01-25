@@ -85,15 +85,15 @@ describe "AirDrop", ->
       beforeEach ->
         drop = AirDrop("drop").minimize()
 
-      it "defaults to AirDrop.Minimizers.Uglify", ->
-        expect(drop.minimizer).toEqual AirDrop.Minimizers.Uglify
+      it "defaults to AirDrop.Minimizers.Default", ->
+        expect(drop.minimizer).toEqual AirDrop.Minimizers.Default
 
     describe "with true", ->
       beforeEach ->
         drop = AirDrop("drop").minimize(true)
 
-      it "defaults to AirDrop.Minimizers.Uglify", ->
-        expect(drop.minimizer).toEqual AirDrop.Minimizers.Uglify
+      it "defaults to AirDrop.Minimizers.Default", ->
+        expect(drop.minimizer).toEqual AirDrop.Minimizers.Default
 
     describe "with false", ->
       beforeEach ->
@@ -127,3 +127,65 @@ describe "AirDrop", ->
 
       it "returns the output of the function", ->
         expectSourceToMatch drop, "This is minimized! It had 127 characters."
+
+
+  describe "#cache", ->
+    describe "with no args", ->
+      beforeEach ->
+        drop = AirDrop("drop").cache()
+
+      it "defaults to AirDrop.Cachers.Default", ->
+        expect(drop.cacher).toEqual AirDrop.Cachers.Default
+
+    describe "with true", ->
+      beforeEach ->
+        drop = AirDrop("drop").cache(true)
+
+      it "defaults to AirDrop.Cachers.Default", ->
+        expect(drop.cacher).toEqual AirDrop.Cachers.Default
+
+    describe "with false", ->
+      beforeEach ->
+        drop = AirDrop("drop").cache(false)
+
+      it "sets cacher to null", ->
+        expect(drop.cacher).toBeNull()
+
+    describe "with a function", ->
+      func = cacher = null
+      beforeEach ->
+        cacher = jasmine.createSpy "custom cacher"
+        drop = AirDrop("drop").cache(cacher)
+
+      it "sets the function as the cacher", ->
+        expect(drop.cacher).toEqual(cacher)
+
+  describe "#useCachedResult", ->
+    value = fetcher = callback = null
+    beforeEach ->
+      value = "Cached"
+      fetcher = (cb) ->
+        cb(null, value)
+      callback = jasmine.createSpy("callback")
+
+    describe "with AirDrop.Cachers.InMemory", ->
+      beforeEach ->
+        drop = AirDrop("drop").cache(AirDrop.Cachers.InMemory)
+      
+      it "fetches the cached version", ->
+        drop.useCachedResult("key", fetcher, callback)
+        value = "Not Cached"
+        drop.useCachedResult("key", fetcher, callback)
+        expect(callback.argsForCall[1]).toEqual([null, "Cached"])
+
+    describe "with custom cacher", ->
+      beforeEach ->
+        customCacher = (key, orig, cb) ->
+          orig (err, data) ->
+            cb(null, data + " CUSTOM")
+
+        drop = AirDrop("drop").cache(customCacher)
+
+      it "has access to the orig value and can manipulate it", ->
+        drop.useCachedResult("key", fetcher, callback)
+        expect(callback).toHaveBeenCalledWith(null, "Cached CUSTOM")
