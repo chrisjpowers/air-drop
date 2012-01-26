@@ -1,4 +1,4 @@
-require.define('spec/fixtures/requires/d', function(require, module, exports){
+require.define('spec/fixtures/requires/d', function(require, module, exports) {
 exports.d = function() {
   console.log("Hello from D!");
   return "D";
@@ -6,7 +6,7 @@ exports.d = function() {
 
 });
 
-require.define('spec/fixtures/requires/e', function(require, module, exports){
+require.define('spec/fixtures/requires/e', function(require, module, exports) {
 exports.e = function() {
   console.log("Hello from E!");
   return "E";

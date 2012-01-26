@@ -80,6 +80,33 @@ var package = AirDrop("my-package").require("lib/my-module.js")
 server.use(package);
 ```
 
+By default, the package can be accessed in the browser by using `require` 
+and the path. This is not always appropriate, however, so you can pass in 
+an options object with a `name` key to explicitly set the module's name in
+the browser. For example, reusing the `underscore` node lib:
+
+```javascript
+// in your Node script
+var package = AirDrop("my-package").require(__dirname + "/../node_modules/underscore/underscore.js", {name: "underscore"});
+
+// in the browser
+var _ = require("underscore");
+```
+
+Whenever you `require` a file with `AirDrop`, it will automatically include
+the `browser-require` library that makes all these require statements work
+in the browser. If you have multiple packages being loaded onto a page, you
+will only need `browser-require` included in one of them, so you will want
+to prevent its inclusion in the others with `useBrowserRequire(false)`:
+
+```javascript
+var package1 = AirDrop("package1").require("lib/mod1");
+var package2 = AirDrop("package2").require("lib/mod2").useBrowserRequire(false);
+```
+
+As you may have guessed, `useBrowserRequire(true)` includes `browser-require`
+the package even if its `require` method was never used.
+
 ## Packaging Your Code
 
 By default, `AirDrop` does not package your code, as this makes debugging difficult

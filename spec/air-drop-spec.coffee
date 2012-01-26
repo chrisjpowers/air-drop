@@ -79,6 +79,12 @@ describe "AirDrop", ->
       it "wraps the required files and includes them", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/de.js"
 
+    describe "with an explicit name", ->
+      beforeEach ->
+        drop = AirDrop("drop").useBrowserRequire(false).package().require("spec/fixtures/requires/d.js", {name: "d"})
+
+      it "uses the name in the define statement rather than the path", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
 
   describe "#minimize", ->
     describe "with no args", ->
@@ -111,7 +117,6 @@ describe "AirDrop", ->
       it "sets the function as the minimizer", ->
         expect(drop.minimizer).toEqual(minimizer)
 
-  
     describe "with AirDrop.Minimizers.Uglify", ->
       beforeEach ->
         drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(AirDrop.Minimizers.Uglify).package()
