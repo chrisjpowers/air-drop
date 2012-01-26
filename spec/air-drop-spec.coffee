@@ -3,14 +3,16 @@ AirDrop = require "#{__dirname}/../lib/air-drop.js"
 expected = drop = null
 
 expectSourceToMatch = (drop, content) ->
-  actual = null
+  actual = error = null
   trailingNewline = /(\n|\r)+$/
   expected = content.replace(trailingNewline, "")
   drop.source((err, data) ->
+    error = err
     actual = data
   )
-  waitsFor -> actual
+  waitsFor -> actual || error
   runs ->
+    throw error if error
     expect(actual.replace(trailingNewline, "")).toEqual(expected)
 
 expectSourceToMatchFile = (drop, filename) ->
