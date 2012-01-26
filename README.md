@@ -145,6 +145,25 @@ var package = AirDrop("my-package").require("lib/my-module.js")
                                    // or just .minimize()
 ```
 
+By default, the `minimize` function will use `uglify` to minimize your code. If you
+want to customize how your code is minimized, you can pass `minimize` a function instead:
+
+```javascript
+function customMinimizer(data, cb) {
+  try {
+    // do minimization work to data
+    cb(null, data);
+  } catch(e) {
+    cb(e);
+  }
+}
+
+var package = AirDrop("my-package").require("lib/my-module.js")
+                                   .include("public/js/demo.js")
+                                   .package()
+                                   .minimize(customMinimizer);
+```
+
 ## Caching Your Packages
 
 Since building these packages can be an expensive operation, you will probably want to cache
@@ -162,9 +181,63 @@ var package = AirDrop("my-package").require("lib/my-module.js")
                                    // or just .cache()
 ```
 
-## CoffeeScript
+By default, the `cache` method will use a simple in-memory cache. If you want to use
+a different caching method you can pass your own custom cacher to `cache`:
+
+```javascript
+function customCacher(key, orig, cb) {
+  var cachedData = SomeCache.get(key);
+  if(cachedData) {
+    cb(null, cachedData);
+  } else {
+    orig(function(err, data) {
+      if(err) { return cb(err); }
+      SomeCache.set(key, data);
+      cb(null, data);
+    });
+  }
+}
+
+var package = AirDrop("my-package").require("lib/my-module.js")
+                                   .include("public/js/demo.js")
+                                   .package()
+                                   .cache(customCacher);
+```
+
+## Compiling CoffeeScript (and more)
 
 Using CoffeeScript? No problem, any CoffeeScripts will be automatically compiled for you!
+
+If you have some other kind of source that needs to be compiled, you can add your own custom
+compiler. For example, if you need to compile "CrazyScript":
+
+```javascript
+var CrazyScriptCompiler = function(data, cb) {
+  try {
+    // do work on data
+    cb(null, data);
+  }
+  catch(e) {
+    cb(e);
+  }
+};
+
+// pathObj is an AirDrop.Path object, and the test returns true/false for whether our
+// CrazyScriptCompiler should be used for this path object.
+var CrazyScriptTest = function(pathObj) {
+  return /crazyscript$/.test(pathObj.path);
+};
+
+AirDrop.Compilers.add(CrazyScriptCompiler, CrazyScriptTest);
+
+var package = AirDrop("my-package").require("lib/my-module.crazyscript")
+```
+
+You can also explicitly use a custom compiler on a specific include/require:
+
+```javascript
+var package = AirDrop("my-package").require("lib/my-module.js", {compiler: CrazyScriptCompiler});
+```
 
 ## TODO
 

@@ -128,8 +128,8 @@ describe "AirDrop", ->
 
     describe "with custom minimizer", ->
       beforeEach ->
-        minimizer = (code) ->
-          "This is minimized! It had #{code.length} characters."
+        minimizer = (code, cb) ->
+          cb null, "This is minimized! It had #{code.length} characters."
         drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(minimizer).package()
 
       it "returns the output of the function", ->
