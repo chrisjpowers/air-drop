@@ -1,6 +1,6 @@
 {
   "name": "air-drop",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Chris Powers <chrisjpowers@gmail.com>",
   "description": "Utility for packaging, manipulating and delivering JS source to the browser",
   "scripts": {
@@ -9,19 +9,17 @@
   "main": "./lib/air-drop.js",
   "dependencies": {
     "async": "*",
-    "connect": "*",
+    "connect": "> 2.0.0",
     "glob": "*",
     "underscore": "*",
     "coffee-script": "*",
-    "uglify-js": "*"
+    "uglify-js": "*",
+    "burrito": "*"
   },
   "devDependencies": {
     "jasmine-node": "*"
   },
   "engine": {
     "node": ">=0.4"
-  },
-  "engines": {
-    "node": "*"
   }
 }

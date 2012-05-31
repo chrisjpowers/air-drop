@@ -40,10 +40,27 @@ var package = AirDrop("my-package").include("public/js/jquery.js")
 server.use(package);
 ```
 
-In your client-side code, you can load your JS package with a script tag:
+## Making It Available
+
+In your client-side code, you can load your JS package with a script tag;
+by default, your package will be available at `/air-drop/:name.js`:
 
 ```html
 <script type="text/javascript" src="/air-drop/my-package.js"></script>
+```
+
+To change the URL your package is mounted to, use the `at` method:
+
+```javascript
+var package = AirDrop("my-package").include("public/js/jquery.js")
+                                   .include("public/js/file1.js")
+                                   .include("public/js/file2.js")
+                                   .at("/js/main.js");
+server.use(package);
+```
+
+```html
+<script type="text/javascript" src="/js/main.js"></script>
 ```
 
 ## Globbing Paths
@@ -241,7 +258,6 @@ var package = AirDrop("my-package").require("lib/my-module.js", {compiler: Crazy
 
 ## TODO
 
-- Specs!
 - More flexibility in naming AMD modules other than by path
 - Ability to slice out "server-only" code from shared files
 - Improve caching mechanism to integrate storage outside of memory (flat files, memcached)

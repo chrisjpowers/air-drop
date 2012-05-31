@@ -92,7 +92,6 @@ describe "AirDrop", ->
     describe "with a root", ->
       beforeEach ->
         drop = AirDrop("drop").useBrowserRequire(false).package().require("d.js", {root: "#{__dirname}/fixtures/requires"})
-        console.log(drop)
 
       it "finds the path relative to the root", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
