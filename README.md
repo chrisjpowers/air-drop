@@ -256,6 +256,39 @@ You can also explicitly use a custom compiler on a specific include/require:
 var package = AirDrop("my-package").require("lib/my-module.js", {compiler: CrazyScriptCompiler});
 ```
 
+## Stripping Out Server-Only Function Calls
+
+When sharing your code libraries between the server and the client, you may find
+places in your code where you have server-only code mixed in with shared code.
+While the best solution to this problem is properly modularizing your code and
+decoupling, it may be convenient or necessary to strip certain function calls out
+of your code before delivering it to your client. This can be accomplished using
+the `stripFunction` method:
+
+```javascript
+// In your shared code
+onServer(function() {
+  console.log("Shared code run at", new Date());
+});
+```
+
+```javascript
+// Somewhere in your server-side code
+global.onServer = function(func) {
+  // On the server, just run the code passed to onServer.
+  return func();
+};
+
+var package = AirDrop("my-package").require("lib/shared-code.js")
+                                   .stripFunction("onServer")
+                                   .package();
+```
+
+This will actually strip all uses of `onServer` out of the source and never
+deliver its contents to the client. It goes without saying that this feature
+should be used sparingly and with care. If possible, prefer proper code
+modularization over source code manipulation.
+
 ## TODO
 
 - More flexibility in naming AMD modules other than by path
