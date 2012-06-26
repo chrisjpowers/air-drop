@@ -2,10 +2,13 @@ fs = require "fs"
 AirDrop = require "#{__dirname}/../lib/air-drop.js"
 expected = drop = null
 
+format = (code) ->
+  trailingNewline = /(\n|\r)+$/
+  leadingWhitespace = /(\n|\r)\s+/g
+  code.replace(trailingNewline, "").replace(leadingWhitespace, "\n")
+
 expectSourceToMatch = (drop, content) ->
   actual = error = null
-  trailingNewline = /(\n|\r)+$/
-  expected = content.replace(trailingNewline, "")
   drop.source((err, data) ->
     error = err
     actual = data
@@ -14,7 +17,7 @@ expectSourceToMatch = (drop, content) ->
     actual || error
   runs ->
     throw error if error
-    expect(actual.replace(trailingNewline, "")).toEqual(expected)
+    expect(format(actual)).toEqual format(content)
 
 expectSourceToMatchFile = (drop, filename) ->
   content = fs.readFileSync(filename).toString()
@@ -137,7 +140,9 @@ describe "AirDrop", ->
 
     describe "with AirDrop.Minimizers.Uglify", ->
       beforeEach ->
-        drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(AirDrop.Minimizers.Uglify).package()
+        drop = AirDrop("drop").include(__dirname + "/fixtures/includes/a.js")
+                              .include(__dirname + "/fixtures/includes/b.js")
+                              .minimize(AirDrop.Minimizers.Uglify).package()
 
       it "mangles and squeezes output", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/uglified/ab.js"
@@ -149,7 +154,7 @@ describe "AirDrop", ->
         drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(minimizer).package()
 
       it "returns the output of the function", ->
-        expectSourceToMatch drop, "This is minimized! It had 127 characters."
+        expectSourceToMatch drop, "This is minimized! It had 131 characters."
 
 
   describe "#cache", ->
@@ -212,3 +217,13 @@ describe "AirDrop", ->
       it "has access to the orig value and can manipulate it", ->
         drop.useCachedResult("key", fetcher, callback)
         expect(callback).toHaveBeenCalledWith(null, "Cached CUSTOM")
+
+
+  describe "#stripFunction", ->
+    beforeEach ->
+      drop = AirDrop("drop").include(__dirname + "/fixtures/stripping/strip.js")
+                            .stripFunction("stripThis")
+                            .package()
+
+    it "mangles and squeezes output", ->
+      expectSourceToMatchFile drop, "#{__dirname}/fixtures/stripping/stripped.js"
