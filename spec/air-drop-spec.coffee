@@ -77,20 +77,6 @@ describe "AirDrop", ->
       it "uses the name in the define statement rather than the path", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
 
-    describe "with a root", ->
-      beforeEach ->
-        drop = AirDrop("drop").useBrowserRequire(false).package().require("d.js", {root: "#{__dirname}/fixtures/requires"})
-
-      it "finds the path relative to the root", ->
-        expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
-
-#     describe "with a root and redundant path", ->
-#       beforeEach ->
-#         drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/requires/d.js", {root: "#{__dirname}/fixtures/requires"})
-# 
-#       it "finds the path relative to the root", ->
-#         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
-
     describe "with require dependencies", ->
       describe "one layer", ->
         beforeEach ->
