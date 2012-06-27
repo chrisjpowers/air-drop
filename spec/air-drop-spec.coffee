@@ -1,27 +1,5 @@
-fs = require "fs"
 AirDrop = require "#{__dirname}/../lib/air-drop.js"
 expected = drop = null
-
-format = (code) ->
-  trailingNewline = /(\n|\r)+$/
-  leadingWhitespace = /(\n|\r)\s+/g
-  code.replace(trailingNewline, "").replace(leadingWhitespace, "\n")
-
-expectSourceToMatch = (drop, content) ->
-  actual = error = null
-  drop.source((err, data) ->
-    error = err
-    actual = data
-  )
-  waitsFor ->
-    actual || error
-  runs ->
-    throw error if error
-    expect(format(actual)).toEqual format(content)
-
-expectSourceToMatchFile = (drop, filename) ->
-  content = fs.readFileSync(filename).toString()
-  expectSourceToMatch drop, content
 
 describe "AirDrop", ->
   describe "including source", ->
@@ -106,6 +84,27 @@ describe "AirDrop", ->
 #       it "finds the path relative to the root", ->
 #         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
 
+    describe "with require dependencies", ->
+      describe "one layer", ->
+        beforeEach ->
+          drop = AirDrop("drop").useBrowserRequire(false).package().require("spec/fixtures/with-dependencies/h.js")
+
+        it "adds the dependencies", ->
+          expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/h-packaged.js"
+
+      describe "nested", ->
+        beforeEach ->
+          drop = AirDrop("drop").useBrowserRequire(false).package().require("spec/fixtures/with-dependencies/j.js")
+
+        it "adds the dependencies", ->
+          expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/j-packaged.js"
+
+      describe "with duplicated dependencies", ->
+        beforeEach ->
+          drop = AirDrop("drop").useBrowserRequire(false).package().require("spec/fixtures/with-dependencies/k.js")
+
+        it "adds the dependencies", ->
+          expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/k-packaged.js"
 
   describe "#minimize", ->
     describe "with no args", ->
