@@ -1,4 +1,5 @@
 fs = require "fs"
+pathLib = require "path"
 
 format = (code) ->
   trailingNewline = /(\n|\r)+$/
@@ -25,4 +26,8 @@ global.expectSourceToMatchFile = (drop, filename) ->
   content = fs.readFileSync(filename).toString()
   expectSourceToMatch drop, content
 
-
+fs.readdirSync("#{__dirname}/fixtures/node_modules").forEach (name) ->
+  src = "#{__dirname}/fixtures/node_modules/#{name}"
+  des = "#{__dirname}/../node_modules/#{name}"
+  unless pathLib.existsSync des
+    fs.linkSync src, des
