@@ -99,6 +99,14 @@ describe "AirDrop", ->
         it "adds the dependencies", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/k-packaged.js"
 
+      describe "with node_modules", ->
+        beforeEach ->
+          drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/l.js")
+
+        it "adds the dependencies", ->
+          expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/l-packaged.js"
+
+
   describe "#minimize", ->
     describe "with no args", ->
       beforeEach ->
