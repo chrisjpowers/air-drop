@@ -9,10 +9,12 @@ format = (code) ->
 global.expectSourceToMatch = (dropOrSource, content) ->
   actual = error = null
   if dropOrSource.source
-    dropOrSource.source((err, data) ->
-      error = err
-      actual = data
-    )
+    waitsFor -> dropOrSource.paths.length > 0
+    runs ->
+      dropOrSource.source((err, data) ->
+        error = err
+        actual = data
+      )
   else
     actual = dropOrSource
 
