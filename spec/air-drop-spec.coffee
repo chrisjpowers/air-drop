@@ -58,7 +58,7 @@ describe "AirDrop", ->
   describe "requiring source", ->
     describe "#useBrowserRequire", ->
       beforeEach ->
-        drop = AirDrop("drop").useBrowserRequire().package()
+        drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/a.js").useBrowserRequire().package()
 
       it "includes the browser-require source", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/browser-require.js"

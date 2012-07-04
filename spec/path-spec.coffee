@@ -38,7 +38,7 @@ describe "Path", ->
       waitsFor -> paths
       runs ->
         filepaths = _(paths).map (p) -> p.path
-        expect(filepaths).toEqual ["#{base}/f", "#{base}/g"]
+        expect(filepaths).toEqual ["#{base}/f.js", "#{base}/g.coffee"]
 
   describe "paths", ->
     describe "with absolute path", ->
@@ -62,23 +62,23 @@ describe "Path", ->
         expect(@path.relativePath).toEqual "spec/fixtures/includes/a.js"
 
 
-  describe "node modules", ->
-    describe "using index.js", ->
-      beforeEach ->
-        @path = new Path type: "require", path: "module-a"
+  # describe "node modules", ->
+  #   describe "using index.js", ->
+  #     beforeEach ->
+  #       @path = new Path type: "require", path: "module-a"
 
-      it "uses path to index.js", ->
-        expect(@path.path).toEqual pathLib.resolve("#{__dirname}/../node_modules/module-a/index.js")
+  #     it "uses path to index.js", ->
+  #       expect(@path.path).toEqual pathLib.resolve("#{__dirname}/../node_modules/module-a/index.js")
 
-      it "has relative path to index.js", ->
-        expect(@path.relativePath).toEqual "node_modules/module-a/index.js"
+  #     it "has relative path to index.js", ->
+  #       expect(@path.relativePath).toEqual "node_modules/module-a/index.js"
 
-    describe "using main file from package.json", ->
-      beforeEach ->
-        @path = new Path type: "require", path: "module-b"
+  #   describe "using main file from package.json", ->
+  #     beforeEach ->
+  #       @path = new Path type: "require", path: "module-b"
 
-      it "uses path to index.js", ->
-        expect(@path.path).toEqual pathLib.resolve("#{__dirname}/../node_modules/module-b/lib/module-b.js")
+  #     it "uses path to index.js", ->
+  #       expect(@path.path).toEqual pathLib.resolve("#{__dirname}/../node_modules/module-b/lib/module-b.js")
 
-      it "has relative path to index.js", ->
-        expect(@path.relativePath).toEqual "node_modules/module-b/lib/module-b.js"
+  #     it "has relative path to index.js", ->
+  #       expect(@path.relativePath).toEqual "node_modules/module-b/lib/module-b.js"

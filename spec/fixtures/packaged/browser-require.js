@@ -211,3 +211,8 @@ function hackRequire(origRequire) {
 }
 
 require = hackRequire(require);
+
+function a() {
+  console.log("This is A!");
+  return "A";
+}
