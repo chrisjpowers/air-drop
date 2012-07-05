@@ -314,6 +314,7 @@ modularization over source code manipulation.
 ## TODO
 
 - Support for CSS
+- Support modules in `$NODE_PATH`, not just `node_modules`
 - Integration level tests
 - Improve caching mechanism to integrate storage outside of memory (flat files, memcached)
 - Inline documentation
