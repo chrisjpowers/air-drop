@@ -29,38 +29,25 @@ All the following examples assume you have some kind of a Connect-compatible ser
 var server = require("connect").createServer();
 ```
 
-`AirDrop` objects are instantiated with a package name that will be used in the package's
-URL. To include JS files, use the `include` method. Files will be added to the package
-in the order you include them.
+`AirDrop` objects are instantiated with a package url.
+To simply include JS files, use the `include` method. Files will
+be added to the package in the order you include them.
 
 ```javascript
-var package = AirDrop("my-package").include("public/js/jquery.js")
-                                   .include("public/js/file1.js")
-                                   .include("public/js/file2.js");
+var package = AirDrop("/my-package.js")
+                .include("public/js/jquery.js")
+                .include("public/js/file1.js")
+                .include("public/js/file2.js");
 server.use(package);
 ```
 
 ## Making It Available
 
 In your client-side code, you can load your JS package with a script tag;
-by default, your package will be available at `/air-drop/:name.js`:
+by default, your package will be available at the given URL:
 
 ```html
-<script type="text/javascript" src="/air-drop/my-package.js"></script>
-```
-
-To change the URL your package is mounted to, use the `at` method:
-
-```javascript
-var package = AirDrop("my-package").include("public/js/jquery.js")
-                                   .include("public/js/file1.js")
-                                   .include("public/js/file2.js")
-                                   .at("/js/main.js");
-server.use(package);
-```
-
-```html
-<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/my-package.js"></script>
 ```
 
 ## Globbing Paths
@@ -68,8 +55,9 @@ server.use(package);
 Rather than including paths one by one, you can use glob wildcards:
 
 ```javascript
-var package = AirDrop("my-package").include("public/js/jquery.js")
-                                   .include("public/js/**/*.js")
+var package = AirDrop("/my-package.js")
+                .include("public/js/jquery.js")
+                .include("public/js/**/*.js")
 ```
 
 This will first add `jquery.js`, then any other JS files nested inside `public/js`.
@@ -80,48 +68,72 @@ second time by the glob include.
 
 Sharing JS source files between Node and the browser is difficult because the browser
 does not natively implement Node's file loading system using `require` and `exports`.
-This is easy with `AirDrop`, though -- just use the `require` method instead of `include`
-and `AirDrop` will wrap your modules in an AMD `define` block for use in the browser:
+This is easy with AirDrop, though; it will wrap your modules in an AMD `define` blocks for use in the browser.
+
+To explicitly add a file to your package that can be accessed using
+`require`, you can use the `require` method:
 
 ```javascript
 // in lib/my-module.js
 exports.helloWorld = function() { return "Hello World!"; };
 
-// in public/js/demo.js
-var MyModule = require("lib/my-module");
-MyModule.helloWorld(); // "Hello World!"
+// in index.html
+<script src="/my-package.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var MyModule = require("lib/my-module");
+  console.log(MyModule.helloWorld());
+</script>
 
 // in your Node script
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js");
+var package = AirDrop("/my-package.js").require("lib/my-module.js")
 server.use(package);
 ```
 
-By default, the package can be accessed in the browser by using `require` 
-and the path. This is not always appropriate, however, so you can pass in 
-an options object with a `name` key to explicitly set the module's name in
-the browser. For example, reusing the `underscore` node lib:
+When any file is included or required by AirDrop, the code is analyzed
+for dependencies. AirDrop will automatically read any uses of
+`require` in the file and load the dependent code. This also works
+for modules located in your `node_modules` directory. For example:
 
 ```javascript
-// in your Node script
-var package = AirDrop("my-package").require(__dirname + "/../node_modules/underscore/underscore.js", {name: "underscore"});
+// in public/main.js
+var _ = require("underscore"),
+    a = require("./a.js");
+a.sayHello();
 
-// in the browser
-var _ = require("underscore");
+// in public/a.js
+var b = require("./b.js");
+exports.sayHello = function() {
+  b.sayHello();
+  console.log("Hello from A");
+};
+
+// in public/b.js
+exports.sayHello = function() {
+  console.log("Hello from B");
+};
+
+// in server.js
+var package = AirDrop("/my-package.js")
+                .include("./public/main.js");
+server.use(package);
 ```
 
-Whenever you `require` a file with `AirDrop`, it will automatically include
+Whenever a file is required with AirDrop (explicitly with `require`
+or implicitly as a dependency), AirDrop will automatically include
 the `browser-require` library that makes all these require statements work
 in the browser. If you have multiple packages being loaded onto a page, you
 will only need `browser-require` included in one of them, so you will want
 to prevent its inclusion in the others with `useBrowserRequire(false)`:
 
 ```javascript
-var package1 = AirDrop("package1").require("lib/mod1");
-var package2 = AirDrop("package2").require("lib/mod2").useBrowserRequire(false);
+var package1 = AirDrop("/package1.js")
+                 .require("lib/mod1");
+var package2 = AirDrop("/package2.js")
+                 .require("lib/mod2")
+                 .useBrowserRequire(false);
 ```
 
-As you may have guessed, `useBrowserRequire(true)` includes `browser-require`
+Using `useBrowserRequire(true)` includes `browser-require` into
 the package even if its `require` method was never used.
 
 ## Packaging Your Code
@@ -133,9 +145,10 @@ for each of your included scripts so that they will be loaded individually.
 When you are ready for your code to be packaged, use the `package` method:
 
 ```javascript
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js")
-                                   .package();
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js")
+                .include("public/js/demo.js")
+                .package();
 ```
 
 The `package` method accepts an optional boolean so that you can package conditionally.
@@ -143,9 +156,10 @@ For example, you may only want to package your code if the NODE_ENV environment
 variable is set to `production`:
 
 ```javascript
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js")
-                                   .package(process.env.NODE_ENV === "production");
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js")
+                .include("public/js/demo.js")
+                .package(process.env.NODE_ENV === "production");
 ```
 
 ## Minimizing Your Code
@@ -155,11 +169,12 @@ it from prying eyes. Like the `package` method, the `minimize` method can be cal
 without an argument, or with a boolean:
 
 ```javascript
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js")
-                                   .package(process.env.NODE_ENV === "production")
-                                   .minimize(process.env.NODE_ENV === "production");
-                                   // or just .minimize()
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js")
+                .include("public/js/demo.js")
+                .package(process.env.NODE_ENV === "production")
+                .minimize(process.env.NODE_ENV === "production");
+                // or just .minimize()
 ```
 
 By default, the `minimize` function will use `uglify` to minimize your code. If you
@@ -175,10 +190,11 @@ function customMinimizer(data, cb) {
   }
 }
 
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js")
-                                   .package()
-                                   .minimize(customMinimizer);
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js")
+                .include("public/js/demo.js")
+                .package()
+                .minimize(customMinimizer);
 ```
 
 ## Caching Your Packages
@@ -190,12 +206,13 @@ and `minimize`:
 
 
 ```javascript
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js")
-                                   .package(process.env.NODE_ENV === "production")
-                                   .minimize(process.env.NODE_ENV === "production")
-                                   .cache(process.env.NODE_ENV === "production");
-                                   // or just .cache()
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js")
+                .include("public/js/demo.js")
+                .package(process.env.NODE_ENV === "production")
+                .minimize(process.env.NODE_ENV === "production")
+                .cache(process.env.NODE_ENV === "production");
+                // or just .cache()
 ```
 
 By default, the `cache` method will use a simple in-memory cache. If you want to use
@@ -215,10 +232,11 @@ function customCacher(key, orig, cb) {
   }
 }
 
-var package = AirDrop("my-package").require("lib/my-module.js")
-                                   .include("public/js/demo.js")
-                                   .package()
-                                   .cache(customCacher);
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js")
+                .include("public/js/demo.js")
+                .package()
+                .cache(customCacher);
 ```
 
 ## Compiling CoffeeScript (and more)
@@ -247,13 +265,16 @@ var CrazyScriptTest = function(pathObj) {
 
 AirDrop.Compilers.add(CrazyScriptCompiler, CrazyScriptTest);
 
-var package = AirDrop("my-package").require("lib/my-module.crazyscript")
+var package = AirDrop("/my-package.js").require("lib/my-module.crazyscript")
 ```
 
 You can also explicitly use a custom compiler on a specific include/require:
 
 ```javascript
-var package = AirDrop("my-package").require("lib/my-module.js", {compiler: CrazyScriptCompiler});
+var package = AirDrop("/my-package.js")
+                .require("lib/my-module.js", {
+                  compiler: CrazyScriptCompiler
+                });
 ```
 
 ## Stripping Out Server-Only Function Calls
@@ -279,9 +300,10 @@ global.onServer = function(func) {
   return func();
 };
 
-var package = AirDrop("my-package").require("lib/shared-code.js")
-                                   .stripFunction("onServer")
-                                   .package();
+var package = AirDrop("/my-package.js")
+                .require("lib/shared-code.js")
+                .stripFunction("onServer")
+                .package();
 ```
 
 This will actually strip all uses of `onServer` out of the source and never
@@ -291,7 +313,7 @@ modularization over source code manipulation.
 
 ## TODO
 
-- More flexibility in naming AMD modules other than by path
-- Ability to slice out "server-only" code from shared files
+- Support for CSS
+- Integration level tests
 - Improve caching mechanism to integrate storage outside of memory (flat files, memcached)
 - Inline documentation

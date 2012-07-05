@@ -38,7 +38,7 @@ require.define("spec/fixtures/with-dependencies/k", function(require, module, ex
   var j = require("./j");
   exports.k = function() {
     var g = require("./g");
-    console.log("k");
+    console.log("k", g.g(), h.h(), j.j());
   };
 });
 
