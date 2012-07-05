@@ -70,13 +70,6 @@ describe "AirDrop", ->
       it "wraps the required files and includes them", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/de.js"
 
-    describe "with an explicit name", ->
-      beforeEach ->
-        drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/requires/d.js", {name: "d"})
-
-      it "uses the name in the define statement rather than the path", ->
-        expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
-
     describe "with require dependencies", ->
       describe "one layer", ->
         beforeEach ->
