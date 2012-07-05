@@ -6,7 +6,7 @@ describe "AirDrop", ->
     describe "with packaging", ->
       describe "with individual paths", ->
         beforeEach ->
-          drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/b.js").include("#{__dirname}/fixtures/includes/a.js").package()
+          drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/b.js").include("#{__dirname}/fixtures/includes/a.js").package()
 
         it "builds the package with given files in order", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/ba.js"
@@ -17,14 +17,14 @@ describe "AirDrop", ->
 
       describe "with relative paths", ->
         beforeEach ->
-          drop = AirDrop("drop").include("./spec/fixtures/includes/b.js").include("./spec/fixtures/includes/a.js").package()
+          drop = AirDrop("/drop.js").include("./spec/fixtures/includes/b.js").include("./spec/fixtures/includes/a.js").package()
 
         it "builds the package with given files in order", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/ba.js"
 
       describe "with globbed paths", ->
         beforeEach ->
-          drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/*.js").package()
+          drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/*.js").package()
 
         it "builds the package with all matching files", ->
           expectSourceToMatchFile(drop, "#{__dirname}/fixtures/packaged/ab.js")
@@ -36,21 +36,21 @@ describe "AirDrop", ->
     describe "without packaging", ->
       describe "with individual paths", ->
         beforeEach ->
-          drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/b.js").include("#{__dirname}/fixtures/includes/a.js").package(false)
+          drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/b.js").include("#{__dirname}/fixtures/includes/a.js").package(false)
 
         it "builds the package with given files in order", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/unpackaged/ba.js"
 
       describe "with globbed paths", ->
         beforeEach ->
-          drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/*.js").package(false)
+          drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/*.js").package(false)
 
         it "builds the package with all matching files", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/unpackaged/ab.js"
 
     describe "with coffeescripts", ->
       beforeEach ->
-        drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/c.coffee").package()
+        drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/c.coffee").package()
 
       it "compiles automatically", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/c.js"
@@ -58,21 +58,21 @@ describe "AirDrop", ->
   describe "requiring source", ->
     describe "#useBrowserRequire", ->
       beforeEach ->
-        drop = AirDrop("drop").include("#{__dirname}/fixtures/includes/a.js").useBrowserRequire().package()
+        drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/a.js").useBrowserRequire().package()
 
       it "includes the browser-require source", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/browser-require.js"
 
     describe "with individual paths", ->
       beforeEach ->
-        drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/requires/*.js")
+        drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/requires/*.js")
 
       it "wraps the required files and includes them", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/de.js"
 
     describe "with an explicit name", ->
       beforeEach ->
-        drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/requires/d.js", {name: "d"})
+        drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/requires/d.js", {name: "d"})
 
       it "uses the name in the define statement rather than the path", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/d-with-name.js"
@@ -80,28 +80,28 @@ describe "AirDrop", ->
     describe "with require dependencies", ->
       describe "one layer", ->
         beforeEach ->
-          drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/h.js")
+          drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/h.js")
 
         it "adds the dependencies", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/h-packaged.js"
 
       describe "nested", ->
         beforeEach ->
-          drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/j.js")
+          drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/j.js")
 
         it "adds the dependencies", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/j-packaged.js"
 
       describe "with duplicated dependencies", ->
         beforeEach ->
-          drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/k.js")
+          drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/k.js")
 
         it "adds the dependencies", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/k-packaged.js"
 
       describe "with node_modules", ->
         beforeEach ->
-          drop = AirDrop("drop").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/l.js")
+          drop = AirDrop("/drop.js").useBrowserRequire(false).package().require("#{__dirname}/fixtures/with-dependencies/l.js")
 
         it "adds the dependencies", ->
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/with-dependencies/l-packaged.js"
@@ -110,21 +110,21 @@ describe "AirDrop", ->
   describe "#minimize", ->
     describe "with no args", ->
       beforeEach ->
-        drop = AirDrop("drop").minimize()
+        drop = AirDrop("/drop.js").minimize()
 
       it "defaults to AirDrop.Minimizers.Default", ->
         expect(drop.minimizer).toEqual AirDrop.Minimizers.Default
 
     describe "with true", ->
       beforeEach ->
-        drop = AirDrop("drop").minimize(true)
+        drop = AirDrop("/drop.js").minimize(true)
 
       it "defaults to AirDrop.Minimizers.Default", ->
         expect(drop.minimizer).toEqual AirDrop.Minimizers.Default
 
     describe "with false", ->
       beforeEach ->
-        drop = AirDrop("drop").minimize(false)
+        drop = AirDrop("/drop.js").minimize(false)
 
       it "sets minimizer to null", ->
         expect(drop.minimizer == AirDrop.Minimizers.None).toBeTruthy()
@@ -133,14 +133,14 @@ describe "AirDrop", ->
       func = minimizer = null
       beforeEach ->
         minimizer = jasmine.createSpy "custom minimizer"
-        drop = AirDrop("drop").minimize(minimizer)
+        drop = AirDrop("/drop.js").minimize(minimizer)
 
       it "sets the function as the minimizer", ->
         expect(drop.minimizer).toEqual(minimizer)
 
     describe "with AirDrop.Minimizers.Uglify", ->
       beforeEach ->
-        drop = AirDrop("drop").include(__dirname + "/fixtures/includes/a.js")
+        drop = AirDrop("/drop.js").include(__dirname + "/fixtures/includes/a.js")
                               .include(__dirname + "/fixtures/includes/b.js")
                               .minimize(AirDrop.Minimizers.Uglify).package()
 
@@ -151,7 +151,7 @@ describe "AirDrop", ->
       beforeEach ->
         minimizer = (code, cb) ->
           cb null, "This is minimized! It had #{code.length} characters."
-        drop = AirDrop("drop").include(__dirname + "/fixtures/includes/*.js").minimize(minimizer).package()
+        drop = AirDrop("/drop.js").include(__dirname + "/fixtures/includes/*.js").minimize(minimizer).package()
 
       it "returns the output of the function", ->
         expectSourceToMatch drop, "This is minimized! It had 131 characters."
@@ -160,21 +160,21 @@ describe "AirDrop", ->
   describe "#cache", ->
     describe "with no args", ->
       beforeEach ->
-        drop = AirDrop("drop").cache()
+        drop = AirDrop("/drop.js").cache()
 
       it "defaults to AirDrop.Cachers.Default", ->
         expect(drop.cacher).toEqual AirDrop.Cachers.Default
 
     describe "with true", ->
       beforeEach ->
-        drop = AirDrop("drop").cache(true)
+        drop = AirDrop("/drop.js").cache(true)
 
       it "defaults to AirDrop.Cachers.Default", ->
         expect(drop.cacher).toEqual AirDrop.Cachers.Default
 
     describe "with false", ->
       beforeEach ->
-        drop = AirDrop("drop").cache(false)
+        drop = AirDrop("/drop.js").cache(false)
 
       it "sets cacher to null", ->
         expect(drop.cacher == AirDrop.Cachers.None).toBeTruthy()
@@ -183,7 +183,7 @@ describe "AirDrop", ->
       func = cacher = null
       beforeEach ->
         cacher = jasmine.createSpy "custom cacher"
-        drop = AirDrop("drop").cache(cacher)
+        drop = AirDrop("/drop.js").cache(cacher)
 
       it "sets the function as the cacher", ->
         expect(drop.cacher).toEqual(cacher)
@@ -198,7 +198,7 @@ describe "AirDrop", ->
 
     describe "with AirDrop.Cachers.InMemory", ->
       beforeEach ->
-        drop = AirDrop("drop").cache(AirDrop.Cachers.InMemory)
+        drop = AirDrop("/drop.js").cache(AirDrop.Cachers.InMemory)
       
       it "fetches the cached version", ->
         drop.useCachedResult("key", fetcher, callback)
@@ -212,7 +212,7 @@ describe "AirDrop", ->
           orig (err, data) ->
             cb(null, data + " CUSTOM")
 
-        drop = AirDrop("drop").cache(customCacher)
+        drop = AirDrop("/drop.js").cache(customCacher)
 
       it "has access to the orig value and can manipulate it", ->
         drop.useCachedResult("key", fetcher, callback)
@@ -221,7 +221,7 @@ describe "AirDrop", ->
 
   describe "#stripFunction", ->
     beforeEach ->
-      drop = AirDrop("drop").include(__dirname + "/fixtures/stripping/strip.js")
+      drop = AirDrop("/drop.js").include(__dirname + "/fixtures/stripping/strip.js")
                             .stripFunction("stripThis")
                             .package()
 

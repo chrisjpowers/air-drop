@@ -49,7 +49,7 @@ describe "Path", ->
         expect(@path.path).toEqual "#{__dirname}/fixtures/includes/a.js"
 
       it "has a relative path", ->
-        expect(@path.relativePath).toEqual "spec/fixtures/includes/a.js"
+        expect(@path.relativePath).toEqual "./spec/fixtures/includes/a.js"
 
     describe "with relative path", ->
       beforeEach ->
@@ -59,7 +59,7 @@ describe "Path", ->
         expect(@path.path).toEqual "#{__dirname}/fixtures/includes/a.js"
 
       it "has a relative path", ->
-        expect(@path.relativePath).toEqual "spec/fixtures/includes/a.js"
+        expect(@path.relativePath).toEqual "./spec/fixtures/includes/a.js"
 
 
   # describe "node modules", ->
