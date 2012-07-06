@@ -4,7 +4,8 @@ pathLib = require "path"
 format = (code) ->
   trailingNewline = /(\n|\r)+$/
   leadingWhitespace = /(\n|\r)\s+/g
-  code.replace(trailingNewline, "").replace(leadingWhitespace, "\n")
+  out = code.replace(trailingNewline, "").replace(leadingWhitespace, "\n")
+  "\n#{out}\n"
 
 global.expectSourceToMatch = (dropOrSource, content) ->
   actual = error = null

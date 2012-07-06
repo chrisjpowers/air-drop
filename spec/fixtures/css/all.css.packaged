@@ -1,0 +1,16 @@
+.e {
+  color: green;
+}
+.c {
+  color: red;
+}
+.a {
+  font-weight: bold;
+}
+.d {
+  color: blue;
+}
+.b {
+  font-style: italic;
+}
+
