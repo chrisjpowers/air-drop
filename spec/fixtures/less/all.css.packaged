@@ -1,0 +1,21 @@
+.e {
+color: green;
+}
+.c {
+color: red;
+}
+.a {
+font-weight: bold;
+}
+.e {
+color: green;
+}
+.c {
+color: red;
+}
+.d {
+color: blue;
+}
+.b {
+font-style: italic;
+}

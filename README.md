@@ -3,7 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/chrisjpowers/air-drop.png)](http://travis-ci.org/chrisjpowers/air-drop)
 
 `AirDrop` is a Node.js Connect middleware for compiling, concatenating and minimizing
- your JS/Coffee source files and delivering them to the browser on-the-fly. 
+ your JS and CSS source files and delivering them to the browser on-the-fly. 
 Personally I think this approach is preferable to using build scripts, file watchers, etc.
 
 ## Install
@@ -311,9 +311,68 @@ deliver its contents to the client. It goes without saying that this feature
 should be used sparingly and with care. If possible, prefer proper code
 modularization over source code manipulation.
 
+## Packaging CSS Files
+
+AirDrop supports similar features for packaging CSS files. If the
+URL passed to the `AirDrop` function ends in `.css`, the package
+will be treated as CSS.
+
+Use `include` to include CSS files into the package, and globs work
+too:
+
+```javascript
+var package = AirDrop("/my-package.css")
+                .include("public/css/vendored/*.css")
+                .include("public/css/main.css")
+                .package();
+```
+
+Similar to JS packages, using the `package` function will concatenate
+all the source files into a single file. Without it, the package
+file will simply use the CSS `@import` directive to load the
+individual files.
+
+## CSS Dependencies
+
+The `@import` CSS directive is convenient but not performant,
+so AirDrop will replace all `@import`s with the inline contents of
+the imported file. For example:
+
+```css
+/* in public/main.css */
+@import url("partials/a.css");
+@import url("partials/b.css");
+.c { color: red; }
+
+/* in public/partials/a.css */
+.a { color: blue; }
+
+/* in public/partials/b.css */
+.b { color: green; }
+```
+
+When packaged, the resulting CSS is:
+
+```css
+.a { color: blue; }
+.b { color: green; }
+.c { color: red; }
+```
+
+## Using Stylus and Less
+
+AirDrop ships with compilers for both 
+[Stylus](http://learnboost.github.com/stylus/) and 
+[Less](http://lesscss.org/) out of the box. All `.styl` and `.less`
+files that are included into a package will be compiled automatically. 
+
+*NOTE:* Because Stylus and Less have their own mechanisms for
+importing source files using `@import`, AirDrop does not inline the
+dependencies like it does with straight CSS files.
+
+
 ## TODO
 
-- Support for CSS
 - Support modules in `$NODE_PATH`, not just `node_modules`
 - Integration level tests
 - Improve caching mechanism to integrate storage outside of memory (flat files, memcached)

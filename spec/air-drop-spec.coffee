@@ -236,3 +236,33 @@ describe "AirDrop", ->
 
       it "concatenates CSS and inlines @import directives", ->
         expectSourceToMatchFile drop, "#{__dirname}/fixtures/css/all.css.packaged"
+
+  describe "with stylus", ->
+    describe "without packaging", ->
+      beforeEach ->
+        drop = AirDrop("/drop.css").include("#{__dirname}/fixtures/stylus/*.styl").package(false)
+
+      it "has an @import for each file", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/stylus/all.css.unpackaged"
+
+    describe "with packaging", ->
+      beforeEach ->
+        drop = AirDrop("/drop.css").include("#{__dirname}/fixtures/stylus/*.styl").package()
+
+      it "concatenates CSS and inlines @import directives", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/stylus/all.css.packaged"
+
+  describe "with less", ->
+    describe "without packaging", ->
+      beforeEach ->
+        drop = AirDrop("/drop.css").include("#{__dirname}/fixtures/less/*.less").package(false)
+
+      it "has an @import for each file", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/less/all.css.unpackaged"
+
+    describe "with packaging", ->
+      beforeEach ->
+        drop = AirDrop("/drop.css").include("#{__dirname}/fixtures/less/*.less").package()
+
+      it "concatenates CSS and inlines @import directives", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/less/all.css.packaged"
