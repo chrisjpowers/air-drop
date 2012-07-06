@@ -1,7 +1,5 @@
 # AirDrop
 
-[![Build Status](https://secure.travis-ci.org/chrisjpowers/air-drop.png)](http://travis-ci.org/chrisjpowers/air-drop)
-
 `AirDrop` is a Node.js Connect middleware for compiling, concatenating and minimizing
  your JS and CSS source files and delivering them to the browser on-the-fly. 
 Personally I think this approach is preferable to using build scripts, file watchers, etc.
