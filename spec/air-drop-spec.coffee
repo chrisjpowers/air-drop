@@ -220,3 +220,19 @@ describe "AirDrop", ->
 
     it "mangles and squeezes output", ->
       expectSourceToMatchFile drop, "#{__dirname}/fixtures/stripping/stripped.js"
+
+
+  describe "with css", ->
+    describe "without packaging", ->
+      beforeEach ->
+        drop = AirDrop("/drop.css").include("#{__dirname}/fixtures/css/*.css").package(false)
+
+      it "has an @import for each file", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/css/all.css.unpackaged"
+
+    describe "with packaging", ->
+      beforeEach ->
+        drop = AirDrop("/drop.css").include("#{__dirname}/fixtures/css/*.css").package()
+
+      it "concatenates CSS and inlines @import directives", ->
+        expectSourceToMatchFile drop, "#{__dirname}/fixtures/css/all.css.packaged"

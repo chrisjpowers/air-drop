@@ -16,15 +16,28 @@ describe "Path", ->
         expectSourceToMatchFile code, "#{__dirname}/fixtures/includes/a.js"
   
   describe "#dependencies", ->
-    beforeEach ->
-      @path = new Path type: "include", path: "#{__dirname}/fixtures/with-dependencies/h.js"
+    describe "with js", ->
+      beforeEach ->
+        @path = new Path type: "include", path: "#{__dirname}/fixtures/with-dependencies/h.js"
 
-    it "returns an array of required module names", ->
-      deps = null
-      @path.dependencies (err, data) ->
-        deps = data
-      waitsFor -> deps
-      runs -> expect(deps).toEqual ["./f", "./g"]
+      it "returns an array of required module names", ->
+        deps = null
+        @path.dependencies (err, data) ->
+          deps = data
+        waitsFor -> deps
+        runs -> expect(deps).toEqual ["./f", "./g"]
+
+    describe "with css", ->
+      beforeEach ->
+        @path = new Path type: "include", path: "#{__dirname}/fixtures/css/a.css", isCss: true
+
+      it "returns an array of imported css file names", ->
+        deps = null
+        @path.dependencies (err, data) ->
+          deps = data
+        waitsFor -> deps
+        runs -> expect(deps).toEqual ["partials/c.css"]
+
 
   describe "#dependencyPaths", ->
     beforeEach ->
