@@ -1,3 +1,4 @@
+fs = require "fs"
 AirDrop = require "#{__dirname}/../lib/air-drop.js"
 expected = drop = null
 
@@ -14,6 +15,18 @@ describe "AirDrop", ->
         it "does not include files twice", ->
           drop.include("#{__dirname}/fixtures/includes/b.js").include("#{__dirname}/fixtures/includes/a.js")
           expectSourceToMatchFile drop, "#{__dirname}/fixtures/packaged/ba.js"
+      describe "determinant ordering", ->
+        it "is always ordered the same", ->
+          expected = fs.readFileSync("#{__dirname}/fixtures/packaged/ba.js").toString()
+          doneCount = 0
+          loopCount = 100
+          while loopCount > 0
+            loopCount--
+            drop = AirDrop("/drop.js").include("#{__dirname}/fixtures/includes/b.js").include("#{__dirname}/fixtures/includes/a.js").package()
+            expectSourceToMatch drop, expected
+            doneCount++
+
+          waitsFor -> doneCount == 100
 
       describe "with relative paths", ->
         beforeEach ->
