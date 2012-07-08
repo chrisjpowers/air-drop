@@ -160,7 +160,7 @@ describe "AirDrop", ->
         drop = AirDrop("/drop.js").include(__dirname + "/fixtures/includes/*.js").minimize(minimizer).package()
 
       it "returns the output of the function", ->
-        expectSourceToMatch drop, "This is minimized! It had 131 characters."
+        expectSourceToMatch drop, "This is minimized! It had 127 characters."
 
 
   describe "#cache", ->
