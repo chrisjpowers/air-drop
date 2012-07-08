@@ -231,7 +231,7 @@ describe "AirDrop", ->
                             .stripFunction("stripThis")
                             .package()
 
-    it "mangles and squeezes output", ->
+    it "removes the stripped function", ->
       expectSourceToMatchFile drop, "#{__dirname}/fixtures/stripping/stripped.js"
 
 
