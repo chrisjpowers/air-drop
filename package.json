@@ -1,12 +1,15 @@
 {
   "name": "air-drop",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Chris Powers <chrisjpowers@gmail.com>",
   "description": "Utility for packaging, manipulating and delivering JS and CSS source to the browser",
   "scripts": {
     "test": "jasmine-node --coffee spec"
   },
   "main": "./lib/air-drop.js",
+  "bin": {
+    "air-drop": "bin/cli.js"
+  },
   "dependencies": {
     "async": "*",
     "connect": "> 2.0.0",
