@@ -6,18 +6,42 @@ var token,
     AirDrop = require(pathLib.join(__dirname, "..", "lib", "air-drop.js")),
     package = require(pathLib.join(__dirname, "..", "package.json"));
 
-if (process.argv.indexOf("-v") > -1) {
+function hasFlag() {
+  for(var i=0; i < arguments.length; i++) {
+    var flag = arguments[i];
+    if (process.argv.indexOf(flag) > -1) return true;
+  }
+  return false;
+}
+
+if (hasFlag("-v", "--version")) {
   console.log(package.version);
   process.exit();
 }
 
-if (process.argv.indexOf("--css") > -1) {
+if (hasFlag("-h", "--help")) {
+  var lines = [
+    "Usage: air-drop [options] > my-package.js",
+    "Options:",
+    "  --css : Treat the package as a CSS package",
+    "  --help, -h : Display this help message",
+    "  --include [path] : Includes the path into the package",
+    "  --minimize : Minimize the package",
+    "  --require [path] : Requires the path into the package",
+    "  --strip-function [name] : Remove uses of the named function from the package",
+    "  --version, -v : Display the version of air-drop"
+  ];
+  console.log(lines.join("\n"));
+  process.exit();
+}
+
+if (hasFlag("--css")) {
   drop = AirDrop("main.css");
 } else {
   drop = AirDrop("main.js");
 }
 
-if (process.argv.indexOf("--minimize") > -1) drop.minimize();
+if (hasFlag("--minimize")) drop.minimize();
 
 drop.package();
 

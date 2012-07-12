@@ -419,6 +419,8 @@ AirDrop("/my-package.css")
   .package();
 ```
 
+For syntax help, use `air-drop --help`.
+
 A few notes about the `air-drop` command:
 
 * On the command line, files are always packaged like the `package()`
@@ -426,11 +428,13 @@ method is used.
 * Caching doesn't make sense on the command line, so there is no
 equivalent to the `cache()` method.
 * Globs, JS dependencies and CSS dependencies are all supported.
+* Paths are added to the package in the order they are included/required.
 * Currently the built-in compilers (CoffeeScript, Less, Stylus)
 are supported, but custom compilers are not.
 
 ## TODO
 
+- Add more robust options parsing and error handling in CLI
 - Support modules in `$NODE_PATH`, not just `node_modules`
 - Integration level tests
 - Improve caching mechanism to integrate storage outside of memory (flat files, memcached)
