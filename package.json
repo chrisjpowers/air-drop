@@ -1,6 +1,6 @@
 {
   "name": "air-drop",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Chris Powers <chrisjpowers@gmail.com>",
   "description": "Utility for packaging, manipulating and delivering JS and CSS source to the browser",
   "scripts": {
@@ -24,6 +24,10 @@
   },
   "devDependencies": {
     "jasmine-node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/chrisjpowers/air-drop.git"
   },
   "engine": {
     "node": ">=0.4"
